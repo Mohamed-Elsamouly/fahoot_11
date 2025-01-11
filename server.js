@@ -40,7 +40,7 @@ io.on('connection', (socket) => {
             sessions.push(session);
         }
 
-        const hasName = session.players.some(obj => obj.name === e.name);
+        const hasName = session.players.some(obj => obj.name.toLowerCase() === e.name.toLowerCase());
         if (hasName) {
             io.to(socket.id).emit("message", { message: true });
             console.log("This name has been taken. Please choose another name");
