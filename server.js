@@ -110,32 +110,41 @@ io.on('connection', (socket) => {
 });
     
     // Handle player disconnection
-    socket.on('disconnect', () => {
-        for (let session of sessions) {
-            const disconnectedPlayerIndex = session.players.findIndex(player => player.socketId === socket.id);
+socket.on('disconnect', () => {
+    for (let session of sessions) {
+        const disconnectedPlayerIndex = session.players.findIndex(player => player.socketId === socket.id);
 
-            if (disconnectedPlayerIndex !== -1) {
-                if (session.players.length < 4) {
-                    // Remove the player from the session if the number of players is less than 4
-                    session.players.splice(disconnectedPlayerIndex, 1);
-                    console.log(`Player disconnected before 4 players were connected. Removed from the session.`);
-                } else {
+        if (disconnectedPlayerIndex !== -1) {
+            const disconnectedPlayer = session.players[disconnectedPlayerIndex];
+
+            if (session.players.length < 4) {
+                // Remove the player from the session if the number of players is less than 4
+                session.players.splice(disconnectedPlayerIndex, 1);
+                console.log(`Player ${disconnectedPlayer.name} disconnected before 4 players were connected. Removed from the session.`);
+            } else {
+                // Check if the player is already in the playersScore array
+                const isPlayerAlreadyScored = session.playersScore.some(playerScore => 
+                    playerScore.sessionId === session.sessionId && playerScore.name === disconnectedPlayer.name
+                );
+
+                if (!isPlayerAlreadyScored) {
                     // Set the player's score to zero if the number of players is 4 or more
-                    const disconnectedPlayer = session.players[disconnectedPlayerIndex];
                     session.playersScore.push({ sessionId: session.sessionId, name: disconnectedPlayer.name, score: 0 });
                     session.disconnectedPlayersCount++;
-                    console.log(`Player disconnected after 4 players were connected. Score set to zero.`);
+                    console.log(`Player ${disconnectedPlayer.name} disconnected after 4 players were connected. Score set to zero.`);
+                } else {
+                    console.log(`Player ${disconnectedPlayer.name} already has a score entry.`);
                 }
-
-                // Check if all 4 players in the session have disconnected
-                if (session.disconnectedPlayersCount === 4) {
-                    // Remove the session from the sessions array
-                    sessions.splice(sessions.indexOf(session), 1);
-                    console.log("All 4 players disconnected in session. Session removed.");
-                }
-                break; // Exit the loop once the player is found and handled
             }
-        }       
-    });
-});
 
+            // Check if all 4 players in the session have disconnected
+            if (session.disconnectedPlayersCount === 4) {
+                // Remove the session from the sessions array
+                sessions.splice(sessions.indexOf(session), 1);
+                console.log("All 4 players disconnected in session. Session removed.");
+            }
+            break; // Exit the loop once the player is found and handled
+        }
+    }       
+});
+});
