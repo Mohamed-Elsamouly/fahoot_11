@@ -7,7 +7,7 @@ var setVar = player.SetVar;
 var getVar = player.GetVar;
 window.Script1 = function()
 {
-  console.log(io); // Ensure `io` is available (e.g., Socket.IO library is loaded)
+  //console.log(io); // Ensure `io` is available (e.g., Socket.IO library is loaded)
 
 // Initialize the socket connection
 const socket = io('https://fahoot1.glitch.me/');
@@ -47,7 +47,7 @@ socket.on("message", (e) => {
 window.Script2 = function()
 {
   let player = GetPlayer(); 
-let question_no = player.GetVar("question_no") - 1; 
+  let question_no = player.GetVar("question_no") - 1; 
 
 const quizQuestions = [
   {
@@ -147,10 +147,10 @@ socket.on("getScore", (data) => {
 
             player.SetVar("getScore", true); // Indicate that scores have been received
         } else {
-            console.error("Not enough players in the data received:", scores);
+            //console.error("Not enough players in the data received:", scores);
         }
     } else {
-        console.error("Received data for a different session:", data.sessionId);
+        //console.error("Received data for a different session:", data.sessionId);
     }
 });
 }
